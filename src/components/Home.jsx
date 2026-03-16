@@ -8,106 +8,180 @@ import { expeditions } from '../data/expeditions';
 // --- Shared Components ---
 
 const SectionTitle = ({ title, subtitle, align = 'center' }) => (
-    <div className={`mb-12 text-${align} z-10 relative`}>
+    <div className={`mb-16 text-${align} z-10 relative px-4`}>
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="flex items-center justify-center gap-3 mb-6"
+        >
+            <div className={`h-[1px] w-8 bg-brand/30 ${align === 'center' ? '' : 'hidden'}`} />
+            <motion.p className="text-sm md:text-base text-brand font-bold tracking-[0.4em] uppercase">
+                {subtitle}
+            </motion.p>
+            <div className={`h-[1px] w-8 bg-brand/30 ${align === 'center' ? '' : 'hidden'}`} />
+        </motion.div>
+        
         <motion.h2
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4"
+            transition={{ duration: 0.8 }}
+            className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-white"
         >
             {title}
         </motion.h2>
-        <motion.div
-            initial={{ opacity: 0, width: 0 }}
-            whileInView={{ opacity: 1, width: '100px' }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className={`h-2 bg-primary mx-auto mb-6`}
-        />
-        <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.5 }}
-            className="text-xl md:text-2xl text-primary font-light tracking-[0.3em] uppercase"
-        >
-            {subtitle}
-        </motion.p>
     </div>
 );
 
 // --- Navbar ---
-const Navbar = () => {
+const Sidebar = () => {
+    const [isHovered, setIsHovered] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    
+    const navItems = [
+        { label: 'Inicio', icon: ChevronDown, href: '#inicio' },
+        { label: 'Nosotros', icon: MapPin, href: '#nosotros' },
+        { label: 'Expediciones', icon: Youtube, href: '#expediciones' },
+        { label: 'Galería', icon: Instagram, href: '#galería' },
+        { label: 'Contacto', icon: Mail, href: '#contacto' },
+    ];
 
     return (
-        <nav className={`fixed w-full z-50 top-0 left-0 px-6 py-4 bg-[#011627]/80 backdrop-blur-lg border-b border-white/5 transition-all text-white`}>
-            <div className="container mx-auto flex justify-between items-center">
-                <div className="text-2xl md:text-3xl font-black tracking-tighter uppercase relative z-50">
-                    VÉRTICE<span className="text-primary">EXTREMO</span>
+        <>
+            {/* Desktop Dynamic Sidebar */}
+            <div 
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                className="fixed left-0 top-0 h-screen z-50 flex items-center pointer-events-none md:pointer-events-auto"
+            >
+                {/* Trigger Zone & Glow Indicator (Enhanced) */}
+                <div className={`absolute left-0 top-1/4 h-1/2 w-4 pointer-events-auto transition-all duration-700 ${isHovered ? 'opacity-0 translate-x-[-20px]' : 'opacity-100 translate-x-0'}`}>
+                    {/* Main Glow Beam */}
+                    <div className="absolute inset-0 bg-brand/20 blur-md rounded-r-full animate-pulse"></div>
+                    <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-transparent via-brand to-transparent rounded-r-full shadow-[0_0_15px_rgba(255,107,53,0.8)]"></div>
+                    
+                    {/* Technical Handle Dots/Line */}
+                    <div className="absolute inset-y-0 left-1 flex flex-col items-center justify-center gap-1 opacity-40">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="w-1 h-1 rounded-full bg-white"></div>
+                        ))}
+                    </div>
                 </div>
+                <div className={`absolute left-0 top-0 w-20 h-full pointer-events-auto transition-all ${isHovered ? 'w-64' : 'w-20'}`}></div>
 
-                <ul className="hidden md:flex space-x-12 font-bold text-sm tracking-widest uppercase items-center">
-                    {['Inicio', 'Nosotros', 'Expediciones', 'Galería', 'Contacto'].map((item) => (
-                        <li key={item}>
-                            <a href={`#${item.toLowerCase()}`} className="relative group overflow-hidden block py-2">
-                                <span className="relative z-10 transition-colors duration-300 group-hover:text-primary">{item}</span>
-                                <span className="absolute bottom-0 left-0 w-full h-[2px] bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
-                            </a>
-                        </li>
-                    ))}
-                    <Link to="/register">
-                        <motion.button
-                            whileHover={{ scale: 1.05, backgroundColor: "#fff", color: "#011627" }}
-                            whileTap={{ scale: 0.95 }}
-                            className="bg-primary text-white px-8 py-3 rounded-full font-bold shadow-[0_0_20px_rgba(255,107,53,0.3)] transition-all"
-                        >
-                            UNIRSE
-                        </motion.button>
-                    </Link>
-                </ul>
-
-                <button
-                    className="md:hidden z-50 relative"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                {/* The Actual Sidebar Panel */}
+                <motion.nav 
+                    initial={false}
+                    animate={{ 
+                        x: isHovered ? 0 : -220,
+                        opacity: isHovered ? 1 : 0
+                    }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 120 }}
+                    className="h-[95vh] w-64 bg-slate-950/20 backdrop-blur-3xl border border-white/5 rounded-r-[40px] shadow-[20px_0_50px_rgba(0,0,0,0.5)] flex flex-col pointer-events-auto ml-2 relative overflow-hidden"
                 >
-                    {isMobileMenuOpen ? <X size={32} /> : <Menu size={32} />}
-                </button>
+                    {/* Mirror Effect Background */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+
+                    <div className="p-8 border-b border-white/5 relative z-10">
+                        <Link to="/" className="flex items-center gap-3 group">
+                            <div className="relative">
+                                <div className="absolute -inset-2 bg-brand/30 rounded-full blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
+                                <img src="/logo.jpg" alt="Logo" className="relative h-12 w-12 rounded-full border-2 border-brand/50" />
+                            </div>
+                            <span className="text-xl font-black uppercase text-white tracking-tighter">
+                                VÉRTICE <br /><span className="text-brand text-xs tracking-[0.5em]">FACTORY</span>
+                            </span>
+                        </Link>
+                    </div>
+
+                    <div className="flex-1 py-10 px-6 space-y-4 relative z-10">
+                        {navItems.map((item) => (
+                            <a 
+                                key={item.label} 
+                                href={item.href}
+                                className="flex items-center gap-5 px-5 py-4 rounded-2xl text-slate-400 hover:text-white hover:bg-white/10 transition-all group relative overflow-hidden"
+                            >
+                                <item.icon size={20} className="group-hover:text-brand transition-colors relative z-10" />
+                                <span className="text-[10px] font-bold uppercase tracking-[0.3em] relative z-10">{item.label}</span>
+                                
+                                {/* Hover background chip */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-brand/20 to-transparent translate-x-[-100%] group-hover:translate-x-0 transition-transform duration-500"></div>
+                            </a>
+                        ))}
+                    </div>
+
+                    {/* Dashboard Sticker / User Icon */}
+                    <div className="p-8 border-t border-white/5 flex justify-center relative z-10">
+                        <Link to="/register" className="group relative">
+                            <div className="absolute -inset-4 bg-brand rounded-full blur-2xl opacity-20 group-hover:opacity-60 transition duration-500"></div>
+                            <div className="h-16 w-16 rounded-full bg-slate-900 border-2 border-white/20 flex items-center justify-center text-white shadow-2xl transform group-hover:scale-110 group-hover:rotate-12 transition-all cursor-pointer overflow-hidden backdrop-blur-md">
+                                <motion.div
+                                    animate={{ rotate: [0, 10, -10, 0] }}
+                                    transition={{ repeat: Infinity, duration: 5 }}
+                                >
+                                    {/* Using Lucide Person icon as the "sticker" base */}
+                                    <Maximize2 size={32} className="text-brand" />
+                                </motion.div>
+                                <div className="absolute inset-0 bg-gradient-to-tr from-brand/40 to-transparent opacity-0 group-hover:opacity-100"></div>
+                            </div>
+                            {/* Pro Badge */}
+                            <span className="absolute -top-1 -right-1 bg-brand text-slate-950 text-[8px] font-black px-2 py-1 rounded-full border border-slate-950 transform rotate-12">PRO</span>
+                        </Link>
+                    </div>
+                </motion.nav>
             </div>
 
+            {/* Mobile Header - Remains similar for usability */}
+            <nav className="md:hidden fixed top-0 w-full z-50 px-6 py-4 bg-slate-950/80 backdrop-blur-xl border-b border-white/10 flex justify-between items-center">
+                <Link to="/" className="flex items-center gap-2">
+                    <img src="/logo.jpg" alt="Logo" className="h-8 w-8 rounded-full shadow-[0_0_15px_rgba(255,107,53,0.3)]" />
+                    <span className="text-lg font-black uppercase text-white">VÉRTICE <span className="text-brand">FACTORY</span></span>
+                </Link>
+                <button 
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="p-2 text-white bg-white/5 rounded-lg"
+                >
+                    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+            </nav>
+
+            {/* Mobile Menu Overlay */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
-                        initial={{ opacity: 0, x: '100%' }}
+                        initial={{ opacity: 0, x: -100 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: '100%' }}
-                        transition={{ type: "spring", damping: 20 }}
-                        className="fixed inset-0 bg-dark z-40 flex flex-col justify-center items-center gap-8"
+                        exit={{ opacity: 0, x: -100 }}
+                        className="fixed inset-0 bg-slate-950 z-[60] flex flex-col p-10"
                     >
-                        {['Inicio', 'Nosotros', 'Expediciones', 'Galería', 'Contacto'].map((item) => (
-                            <a
-                                key={item}
-                                href={`#${item.toLowerCase()}`}
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="text-4xl font-black uppercase text-white hover:text-primary transition-colors"
-                            >
-                                {item}
-                            </a>
-                        ))}
+                        <div className="flex justify-between items-center mb-20">
+                            <span className="text-2xl font-black uppercase text-white">MENU</span>
+                            <button onClick={() => setIsMobileMenuOpen(false)}><X size={32} className="text-white" /></button>
+                        </div>
+                        <div className="space-y-8">
+                            {navItems.map((item) => (
+                                <a 
+                                    key={item.label} 
+                                    href={item.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="block text-4xl font-black uppercase text-slate-500 hover:text-brand transition-colors"
+                                >
+                                    {item.label}
+                                </a>
+                            ))}
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-        </nav >
+        </>
     );
 };
 
 // --- Hero Section ---
 const Hero = () => {
     const { scrollYProgress } = useScroll();
-    const y = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
-    const yFloat1 = useTransform(scrollYProgress, [0, 1], ['0%', '-100px']);
-    const yFloat2 = useTransform(scrollYProgress, [0, 1], ['0%', '-200px']);
+    const y = useTransform(scrollYProgress, [0, 1], ['0%', '40%']);
+    const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
     const scrollToTreks = () => {
         const element = document.getElementById('nosotros');
@@ -132,95 +206,92 @@ const Hero = () => {
     }, []);
 
     return (
-        <section id="inicio" className="h-screen w-full flex items-center justify-center overflow-hidden relative snap-start bg-dark">
-            {/* Main Background Layer */}
-            <motion.div style={{ y }} className="absolute inset-0 z-0">
+        <section id="inicio" className="h-screen w-full flex items-center justify-center overflow-hidden relative bg-slate-950">
+            {/* SaaS Mesh Background Combined with Images */}
+            <div className="absolute inset-0 z-0 bg-mesh opacity-40"></div>
+            
+            <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
                 <AnimatePresence mode="popLayout">
                     <motion.img
                         key={currentImageIndex}
                         src={heroImages[currentImageIndex]}
                         alt="Hero Background"
-                        initial={{ opacity: 0, scale: 1.2 }}
-                        animate={{ opacity: 1, scale: 1 }}
+                        initial={{ opacity: 0, scale: 1.1 }}
+                        animate={{ opacity: 0.4, scale: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 2.5, ease: "easeInOut" }}
-                        className="absolute inset-0 w-full h-full object-cover filter brightness-50"
+                        transition={{ duration: 2, ease: "easeInOut" }}
+                        className="absolute inset-0 w-full h-full object-cover"
                     />
                 </AnimatePresence>
-                <div className="absolute inset-0 bg-gradient-to-b from-dark/30 via-transparent to-dark"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-transparent to-slate-950"></div>
             </motion.div>
 
-            {/* Floating Parallax Elements (Images) */}
-            <motion.div
-                style={{ y: yFloat1, x: -50 }}
-                className="absolute top-[20%] left-[5%] z-0 hidden lg:block opacity-40 pointer-events-none"
-            >
-                <img
-                    src="/everest_base_camp_trek_1769465309368.png"
-                    className="w-[300px] h-[200px] object-cover rounded-2xl shadow-2xl -rotate-6 filter grayscale hover:grayscale-0 transition-all duration-500"
-                    alt="Decorative 1"
-                />
-            </motion.div>
-
-            <motion.div
-                style={{ y: yFloat2, x: 50 }}
-                className="absolute bottom-[20%] right-[5%] z-0 hidden lg:block opacity-40 pointer-events-none"
-            >
-                <img
-                    src="/fitz_roy_patagonia_trek_1769465333392.png"
-                    className="w-[350px] h-[250px] object-cover rounded-2xl shadow-2xl rotate-6 filter grayscale hover:grayscale-0 transition-all duration-500"
-                    alt="Decorative 2"
-                />
-            </motion.div>
-
-            <div className="relative z-10 text-center px-4">
-                <motion.h1
-                    initial={{ opacity: 0, scale: 0.8, letterSpacing: '0em' }}
-                    animate={{ opacity: 1, scale: 1, letterSpacing: '-0.02em' }}
-                    transition={{ duration: 1, ease: "circOut" }}
-                    className="text-6xl md:text-9xl font-black leading-none mb-6 uppercase"
-                >
-                    Sin <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">Límites</span>
-                </motion.h1>
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 }}
-                    className="text-xl md:text-2xl text-gray-200 mb-12 max-w-2xl mx-auto font-light tracking-wide"
-                >
-                    Donde el cielo toca la tierra, comienza tu aventura.
-                </motion.p>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.8 }}
-                    className="flex flex-col items-center gap-8"
-                >
-                    <motion.button
-                        onClick={scrollToTreks}
-                        whileHover={{ scale: 1.05, boxShadow: "0 0 50px rgba(255,107,53,0.5)" }}
-                        whileTap={{ scale: 0.95 }}
-                        className="group relative px-12 py-6 bg-white overflow-hidden rounded-full shadow-[0_0_50px_rgba(255,107,53,0.3)] transition-all duration-300"
-                    >
-                        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        <span className="relative z-10 font-black text-xl uppercase tracking-[0.2em] text-dark group-hover:text-white transition-colors duration-300">
-                            Ver Expediciones
-                        </span>
-                    </motion.button>
-
+            <div className="container mx-auto relative z-10 px-6">
+                <div className="max-w-5xl mx-auto text-center">
                     <motion.div
-                        initial={{ y: 0 }}
-                        animate={{ y: [0, 10, 0] }}
-                        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                        className="flex flex-col items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
-                        onClick={scrollToTreks}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand/20 bg-brand/5 text-brand text-xs font-bold tracking-[0.3em] uppercase mb-8"
                     >
-                        <span className="text-[10px] uppercase tracking-widest text-white/50">Explorar</span>
-                        <ChevronDown className="text-primary" size={32} />
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-brand"></span>
+                        </span>
+                        SaaS Expedition Factory v2.0
                     </motion.div>
-                </motion.div>
+
+                    <motion.h1
+                        initial={{ opacity: 0, filter: 'blur(10px)' }}
+                        animate={{ opacity: 1, filter: 'blur(0px)' }}
+                        transition={{ duration: 1 }}
+                        className="text-6xl md:text-9xl font-black leading-[0.9] mb-8 uppercase text-white"
+                    >
+                        Escala tus <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand via-orange-400 to-indigo-500 animate-gradient-x">Límites</span>
+                    </motion.h1>
+
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.5 }}
+                        className="text-lg md:text-2xl text-slate-400 mb-12 max-w-2xl mx-auto font-light leading-relaxed"
+                    >
+                        La infraestructura tecnológica definitiva para exploradores de alto rendimiento. Gestiona tu aventura con precisión milimétrica.
+                    </motion.p>
+
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+                        <motion.button
+                            onClick={scrollToTreks}
+                            className="premium-button group"
+                        >
+                            <span className="relative z-10 flex items-center gap-3">
+                                EXPLORAR FACTORY <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                            </span>
+                        </motion.button>
+                        
+                        <div className="flex items-center gap-4 text-xs font-bold tracking-widest text-slate-500 uppercase">
+                            <div className="flex -space-x-3">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="h-10 w-10 rounded-full border-2 border-slate-950 bg-slate-800 overflow-hidden">
+                                        <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="user" />
+                                    </div>
+                                ))}
+                            </div>
+                            <span>+500 Usuarios Activos</span>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            {/* Scroll Indicator */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.5 }}
+                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-slate-500"
+            >
+                <div className="w-[1px] h-12 bg-gradient-to-b from-brand to-transparent"></div>
+            </motion.div>
         </section>
     );
 };
@@ -228,16 +299,12 @@ const Hero = () => {
 // --- About Section ---
 const About = () => {
     return (
-        <section id="nosotros" className="min-h-[80vh] w-full bg-dark flex flex-col justify-center relative snap-start px-6 md:px-20 py-24 overflow-hidden">
-            {/* Background elements */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-[10%] -left-[10%] w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full"></div>
-                <div className="absolute bottom-[10%] -right-[10%] w-[500px] h-[500px] bg-blue-500/5 blur-[120px] rounded-full"></div>
-            </div>
+        <section id="nosotros" className="min-h-screen w-full bg-slate-950 flex flex-col justify-center relative px-6 md:px-20 py-20 md:py-32 overflow-hidden">
+            <div className="absolute inset-0 bg-mesh opacity-20 pointer-events-none"></div>
 
-            <SectionTitle title="Nosotros" subtitle="Pasión por la Montaña" />
+            <SectionTitle title="Misión" subtitle="Infraestructura de Aventura" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-16 max-w-7xl mx-auto relative z-10 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 max-w-7xl mx-auto relative z-10 items-center">
                 <motion.div
                     initial={{ opacity: 0, x: -50 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -245,57 +312,56 @@ const About = () => {
                     transition={{ duration: 0.8 }}
                     className="space-y-8"
                 >
-                    <h3 className="text-3xl md:text-5xl font-black uppercase leading-tight">
-                        Más que guías, <br />
-                        <span className="text-primary">Somos Exploradores</span>
+                    <div className="inline-flex items-center gap-2 text-brand font-bold text-xs tracking-widest uppercase">
+                        <span className="w-8 h-[1px] bg-brand"></span>
+                        Deep Tech Exploration
+                    </div>
+                    <h3 className="text-4xl md:text-6xl font-black uppercase leading-tight text-white">
+                        Donde la montaña <br />
+                        <span className="text-brand">se encuentra con el Código</span>
                     </h3>
-                    <p className="text-gray-300 text-lg leading-relaxed font-light">
-                        Desde 2010, Vértice Extremo ha estado a la vanguardia del turismo de aventura en la Patagonia y el mundo. Nacimos de la simple idea de que la verdadera conexión con la naturaleza ocurre cuando salimos de nuestra zona de confort.
+                    <p className="text-slate-400 text-lg leading-relaxed font-light">
+                        Vértice Extremo no es solo una agencia de viajes. Somos una factoría de experiencias escalables fundamentadas en la seguridad técnica y el análisis geográfico avanzado.
                     </p>
-                    <p className="text-gray-300 text-lg leading-relaxed font-light">
-                        Nuestro equipo está formado por alpinistas de élite, biólogos y fotógrafos apasionados por compartir los rincones más remotos del planeta con seguridad, respeto y adrenalina.
-                    </p>
-
-                    <div className="grid grid-cols-3 gap-4 mt-8 border-t border-white/10 pt-8">
-                        <div>
-                            <h4 className="text-4xl font-black text-white mb-2">15+</h4>
-                            <p className="text-sm text-gray-400 uppercase tracking-widest">Años de Exp.</p>
+                    
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className="glass-panel p-6 rounded-2xl">
+                            <h4 className="text-3xl font-black text-white mb-1">99.9%</h4>
+                            <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em]">Uptime Operativo</p>
                         </div>
-                        <div>
-                            <h4 className="text-4xl font-black text-white mb-2">50+</h4>
-                            <p className="text-sm text-gray-400 uppercase tracking-widest">Expediciones</p>
-                        </div>
-                        <div>
-                            <h4 className="text-4xl font-black text-white mb-2">2k+</h4>
-                            <p className="text-sm text-gray-400 uppercase tracking-widest">Aventureros</p>
+                        <div className="glass-panel p-6 rounded-2xl">
+                            <h4 className="text-3xl font-black text-white mb-1">24/7</h4>
+                            <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em]">Monitoreo Satelital</p>
                         </div>
                     </div>
                 </motion.div>
 
                 <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="relative h-[600px] rounded-3xl overflow-hidden group"
+                    className="relative group h-[500px]"
                 >
-                    <img
-                        src="/trekking_gallery_2_1769466407343.png"
-                        alt="Nuestro Equipo"
-                        className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-transparent to-transparent"></div>
-
-                    <div className="absolute bottom-8 left-8 right-8 bg-white/5 backdrop-blur-md p-6 rounded-2xl border border-white/10 transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xl">
-                                V
-                            </div>
-                            <div>
-                                <h5 className="font-bold text-white uppercase tracking-wider">Filosofía Vértice</h5>
-                                <p className="text-xs text-gray-300">Respeto. Seguridad. Superación.</p>
-                            </div>
+                    {/* Simulated Dashboard UI Element */}
+                    <div className="absolute -top-10 -right-10 w-64 glass-panel p-6 rounded-2xl z-20 hidden md:block animate-float">
+                        <div className="flex items-center justify-between mb-4">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ritmo Cardíaco</span>
+                            <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse"></div>
                         </div>
+                        <div className="h-16 flex items-end gap-1">
+                            {[40, 70, 45, 90, 65, 80, 50].map((h, i) => (
+                                <div key={i} className="flex-1 bg-brand/30 rounded-t-sm" style={{ height: `${h}%` }}></div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="w-full h-full rounded-3xl overflow-hidden border border-white/10 relative">
+                        <img
+                            src="/trekking_gallery_2_1769466407343.png"
+                            alt="Factory"
+                            className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-1000"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
                     </div>
                 </motion.div>
             </div>
@@ -305,66 +371,49 @@ const About = () => {
 
 // --- Treks Section ---
 const Treks = () => {
-    const ref = useRef(null);
-    const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-    const yBg = useTransform(scrollYProgress, [0, 1], [100, -100]);
-    const yTitle = useTransform(scrollYProgress, [0, 1], [50, -50]);
-
-    // Usando los datos de importados
     const activeTreks = expeditions;
 
     return (
+        <section id="expediciones" className="min-h-screen w-full bg-slate-950 flex flex-col justify-center relative px-6 md:px-20 py-20 overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-mesh opacity-10 pointer-events-none"></div>
 
-        <section ref={ref} id="expediciones" className="h-screen w-full bg-dark flex flex-col justify-center relative snap-start px-6 md:px-20 overflow-hidden">
-            <motion.div style={{ y: yBg }} className="absolute top-0 right-0 w-1/3 h-full bg-primary/5 blur-[150px] rounded-full pointer-events-none"></motion.div>
+            <SectionTitle title="Nexus" subtitle="Explora el Catálogo" />
 
-            <motion.div style={{ y: yTitle }} className="relative z-10">
-                <SectionTitle title="Expediciones" subtitle="Desafía lo Imposible" />
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto h-[50vh] md:h-[60vh]">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 w-full max-w-7xl mx-auto">
                 {activeTreks.map((trek, i) => (
                     <motion.div
                         key={trek.id}
-                        initial={{ opacity: 0, y: 50, rotateX: 10 }}
-                        whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                        viewport={{ once: true, margin: "-50px" }}
-                        transition={{ delay: i * 0.2, duration: 0.8, type: "spring" }}
-                        whileHover={{ y: -15, transition: { duration: 0.4, ease: "easeOut" } }}
-                        className="h-full perspective-1000 relative group"
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.1 }}
+                        className="saas-card h-[500px] flex flex-col group"
                     >
-                        {/* Glowing Border Gradient */}
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-orange-600 rounded-3xl opacity-0 group-hover:opacity-75 blur transition duration-500"></div>
-
-                        <Link to={`/expedition/${trek.id}`} className="block h-full relative rounded-3xl overflow-hidden cursor-pointer shadow-xl bg-dark border border-white/10">
-                            <div className="absolute inset-0 bg-gray-900 transition-all duration-500 group-hover:scale-110">
-                                <img src={trek.heroImage} alt={trek.title} className="w-full h-full object-cover opacity-60 group-hover:opacity-50 transition-opacity duration-500" />
+                        <div className="relative h-2/3 overflow-hidden">
+                            <img src={trek.heroImage} alt={trek.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 opacity-70" />
+                            <div className="absolute top-6 left-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md border border-white/10 text-[10px] font-bold text-brand uppercase tracking-widest">
+                                {trek.level}
                             </div>
+                        </div>
 
-                            <div className="absolute inset-0 p-8 flex flex-col justify-between z-10">
-                                <div className="flex justify-between items-start">
-                                    <motion.span
-                                        initial={{ opacity: 0, x: -20 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.5 + i * 0.1 }}
-                                        className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest border border-white/10 text-primary"
-                                    >
-                                        {trek.level}
-                                    </motion.span>
-                                </div>
-
-                                <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                                    <h3 className="text-3xl md:text-4xl font-black uppercase mb-2 leading-none">{trek.title}</h3>
-                                    <div className="flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 border-t border-white/20 pt-4 mt-4">
-                                        <span className="text-2xl font-bold text-primary">{trek.price}</span>
-                                        <div className="flex items-center gap-2 text-white font-bold tracking-widest uppercase text-sm group-hover:gap-4 transition-all">
-                                            <span>Ver Más</span>
-                                            <ArrowRight className="text-white" />
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="p-8 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 className="text-2xl font-black uppercase text-white mb-2">{trek.title}</h3>
+                                <p className="text-slate-500 text-sm font-light">Localización Premium: Patagonia</p>
                             </div>
-                        </Link>
+                            
+                            <div className="flex items-center justify-between border-t border-white/5 pt-6">
+                                <div className="text-2xl font-black text-white">
+                                    <span className="text-brand text-sm align-top mr-1">USD</span>
+                                    {trek.price.replace('USD ', '')}
+                                </div>
+                                <Link to={`/expedition/${trek.id}`}>
+                                    <button className="h-10 w-10 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-brand hover:border-brand transition-all">
+                                        <ArrowRight size={18} />
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
                     </motion.div>
                 ))}
             </div>
@@ -372,7 +421,6 @@ const Treks = () => {
     );
 };
 
-// --- Gallery Section ---
 const Gallery = () => {
     const ref = useRef(null);
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -383,87 +431,61 @@ const Gallery = () => {
         "/trekking_gallery_2_1769466407343.png",
         "/trekking_gallery_3_1769466420302.png",
         "/trekking_gallery_4_1769466432762.png",
-        "/fitz_roy_patagonia_trek_1769465333392.png",
+        "/fit_roy_patagonia_trek_1769465333392.png",
         "/everest_base_camp_trek_1769465309368.png"
     ];
 
     const [startIndex, setStartIndex] = useState(0);
     const [selectedImage, setSelectedImage] = useState(null);
 
-    const nextSlide = () => {
-        setStartIndex((prev) => (prev + 1) % images.length);
-    };
+    const nextSlide = () => setStartIndex((prev) => (prev + 1) % images.length);
+    const prevSlide = () => setStartIndex((prev) => (prev - 1 + images.length) % images.length);
 
-    const prevSlide = () => {
-        setStartIndex((prev) => (prev - 1 + images.length) % images.length);
-    };
-
-    // Get strictly 4 visible images based on order
     const visibleImages = [];
     for (let i = 0; i < 4; i++) {
         visibleImages.push(images[(startIndex + i) % images.length]);
     }
 
     return (
-        <section ref={ref} id="galería" className="h-screen w-full relative flex flex-col justify-center items-center overflow-hidden snap-start bg-black">
-            {/* Video Background */}
-            <div className="absolute inset-0 z-0">
-                <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover opacity-40 scale-105"
-                >
-                    <source src="/bg_mountains.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-                <div className="absolute inset-0 bg-gradient-to-b from-dark/90 via-dark/50 to-dark/90"></div>
-                <div className="absolute inset-0 bg-primary/5 mix-blend-overlay"></div>
-            </div>
+        <section ref={ref} id="galería" className="min-h-screen w-full relative flex flex-col justify-center items-center overflow-hidden py-32 bg-slate-950">
+            <div className="absolute inset-0 z-0 bg-mesh opacity-30"></div>
 
             <motion.div style={{ y: yParallax }} className="relative z-10 w-full container mx-auto px-6">
-                <SectionTitle title="Momentos" subtitle="Capturando la Aventura" />
+                <SectionTitle title="Explora" subtitle="Material Visual" />
 
-                <div className="relative w-full max-w-6xl mx-auto h-[400px]">
+                <div className="relative w-full max-w-7xl mx-auto h-[400px] md:h-[500px]">
                     <div className="flex gap-4 md:gap-8 h-full items-center justify-center">
-                        {/* Custom Navigation */}
-                        <button onClick={prevSlide} className="hidden md:flex absolute -left-16 z-20 w-12 h-12 rounded-full border border-white/20 items-center justify-center hover:bg-primary hover:border-primary transition-all">
-                            <ArrowLeft />
+                        <button onClick={prevSlide} className="flex absolute -left-4 md:-left-20 z-20 w-12 h-12 rounded-full glass-panel items-center justify-center text-white hover:bg-brand hover:border-brand transition-all">
+                            <ArrowLeft size={20} />
                         </button>
-                        <button onClick={nextSlide} className="hidden md:flex absolute -right-16 z-20 w-12 h-12 rounded-full border border-white/20 items-center justify-center hover:bg-primary hover:border-primary transition-all">
-                            <ArrowRight />
+                        <button onClick={nextSlide} className="flex absolute -right-4 md:-right-20 z-20 w-12 h-12 rounded-full glass-panel items-center justify-center text-white hover:bg-brand hover:border-brand transition-all">
+                            <ArrowRight size={20} />
                         </button>
 
                         <AnimatePresence mode="popLayout">
                             {visibleImages.map((src, index) => (
                                 <motion.div
-                                    key={`${src}-${index}`} // Unique key for animation
+                                    key={`${src}-${index}`}
                                     layoutId={`img-${src}`}
-                                    initial={{ opacity: 0, scale: 0.8, x: 50, rotateY: 15 }}
-                                    animate={{ opacity: 1, scale: 1, x: 0, rotateY: 0 }}
-                                    exit={{ opacity: 0, scale: 0.8, x: -50, rotateY: -15, transition: { duration: 0.2 } }}
-                                    transition={{ duration: 0.5, type: "spring", bounce: 0.3 }}
-                                    whileHover={{
-                                        scale: 1.05,
-                                        zIndex: 10,
-                                        transition: { duration: 0.2 }
-                                    }}
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ duration: 0.6 }}
                                     onClick={() => setSelectedImage(src)}
-                                    className="flex-1 h-full cursor-pointer relative group rounded-2xl overflow-hidden border border-white/10 hover:border-primary/80 transition-all shadow-lg hover:shadow-[0_0_30px_rgba(255,107,53,0.3)]"
+                                    className={`flex-1 h-full cursor-pointer relative group rounded-3xl overflow-hidden border border-white/10 shadow-2xl
+                                        ${index > 0 ? 'hidden md:block' : ''} ${index > 2 ? 'lg:block hidden' : ''}
+                                    `}
                                 >
                                     <motion.img
                                         src={src}
-                                        className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-500"
+                                        className="w-full h-full object-cover filter brightness-75 group-hover:brightness-100 transition-all duration-700"
                                         alt={`G-${index}`}
-                                        whileHover={{ scale: 1.15 }} // Zoom interno de la imagen
-                                        transition={{ duration: 0.7 }}
+                                        whileHover={{ scale: 1.1 }}
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300"></div>
-
-                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <div className="bg-primary/20 backdrop-blur-md p-4 rounded-full border border-primary/50 transform scale-50 group-hover:scale-100 transition-transform duration-300">
-                                            <Maximize2 className="text-white drop-shadow-lg" size={32} />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="p-4 rounded-full glass-panel text-white">
+                                            <Maximize2 size={32} />
                                         </div>
                                     </div>
                                 </motion.div>
@@ -473,7 +495,6 @@ const Gallery = () => {
                 </div>
             </motion.div>
 
-            {/* Lightbox Modal */}
             <AnimatePresence>
                 {selectedImage && (
                     <motion.div
@@ -481,16 +502,15 @@ const Gallery = () => {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setSelectedImage(null)}
-                        className="fixed inset-0 z-[60] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-20"
+                        className="fixed inset-0 z-[60] bg-slate-950/95 backdrop-blur-2xl flex items-center justify-center p-6"
                     >
                         <motion.img
                             layoutId={`img-${selectedImage}`}
                             src={selectedImage}
-                            className="max-w-full max-h-full rounded-lg shadow-2xl border border-white/10"
-                            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking image
+                            className="max-w-[95vw] max-h-[90vh] rounded-3xl shadow-2xl border border-white/10"
                         />
-                        <button className="absolute top-8 right-8 text-white/50 hover:text-white transition-colors">
-                            <X size={40} />
+                        <button className="absolute top-10 right-10 text-white hover:text-brand transition-colors">
+                            <X size={48} />
                         </button>
                     </motion.div>
                 )}
@@ -500,91 +520,96 @@ const Gallery = () => {
 };
 
 // --- Footer Section ---
-// --- Footer Section ---
-// --- Footer Section ---
 const Footer = () => {
     return (
-        <footer id="contacto" className="h-[60vh] md:h-screen w-full bg-dark flex flex-col justify-center items-center snap-start relative px-6 border-t border-white/5 overflow-hidden">
-            {/* Map Background - Interactive */}
-            <div className="absolute inset-0 z-0 text-center">
-                <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d23820.7624536653!2d-72.88603649999999!3d-49.33160495!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xbdb266580e0a5311%3A0x6713917457497d4c!2sEl%20Chalt%C3%A9n%2C%20Santa%20Cruz!5e0!3m2!1ses!2sar!4v1706040000000!5m2!1ses!2sar"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0, filter: 'grayscale(100%) invert(100%) contrast(100%)' }}
-                    allowFullScreen=""
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="w-full h-full object-cover opacity-50 hover:opacity-100 transition-opacity duration-700"
-                    title="Mapa Interactivo"
-                ></iframe>
+        <footer id="contacto" className="w-full bg-slate-950 pt-32 pb-12 relative overflow-hidden border-t border-white/5">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-brand/5 blur-[120px] rounded-full pointer-events-none"></div>
 
-                {/* Gradient overlay that allows clicks to pass through to map where not covered by content */}
-                <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/80 to-transparent pointer-events-none z-0"></div>
-            </div>
-
-            <div className="container mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10 pointer-events-none">
-                {/* Content wrapper with pointer-events-auto for buttons/text interaction */}
-                <div className="text-center md:text-left pointer-events-auto">
-                    <motion.h2
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-white mb-6 drop-shadow-2xl"
-                    >
-                        Únete al <br /><span className="text-primary">Vértice</span>
-                    </motion.h2>
-                    <div className="flex flex-col md:flex-row gap-6 justify-center md:justify-start">
-                        <Link to="/login">
-                            <motion.button
-                                whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(255,107,53,0.5)" }}
-                                whileTap={{ scale: 0.95 }}
-                                className="bg-primary text-white text-xl font-bold px-10 py-5 rounded-full shadow-lg transition-all block w-full md:w-auto text-center"
-                            >
-                                Reservar Ahora
-                            </motion.button>
+            <div className="container mx-auto px-6 relative z-10">
+                {/* Upper CTA Section */}
+                <div className="glass-panel p-10 md:p-16 rounded-[40px] mb-24 flex flex-col lg:flex-row items-center justify-between gap-10 border border-white/10">
+                    <div className="max-w-2xl text-center lg:text-left">
+                        <h2 className="text-4xl md:text-6xl font-black uppercase text-white mb-6 leading-none">
+                            ¿Listo para <span className="text-brand">despegar?</span>
+                        </h2>
+                        <p className="text-slate-400 text-lg font-light">
+                            Únete a la nueva era de expediciones inteligentes. Tecnología y montaña en perfecta sincronía.
+                        </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+                        <Link to="/register" className="w-full sm:w-auto">
+                            <button className="premium-button w-full">EMPEZAR AHORA</button>
                         </Link>
-                        <Link to="/login">
-                            <motion.button
-                                whileHover={{ scale: 1.05, backgroundColor: "white", color: "black" }}
-                                whileTap={{ scale: 0.95 }}
-                                className="border border-white/20 text-white text-xl font-bold px-10 py-5 rounded-full backdrop-blur-md transition-all block w-full md:w-auto text-center"
-                            >
-                                Contáctanos
-                            </motion.button>
-                        </Link>
+                        <button className="px-8 py-4 rounded-full glass-panel text-white font-bold hover:bg-white/10 transition-all border border-white/10">
+                            HABLAR CON EXPERTO
+                        </button>
                     </div>
                 </div>
 
-                <motion.div
-                    initial={{ opacity: 0, x: 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.8, delay: 0.2 }}
-                    className="space-y-8 glass-morphism p-10 rounded-3xl pointer-events-auto backdrop-blur-xl bg-black/40 border border-white/10 hover:border-white/20 transition-colors"
-                >
-                    <div className="flex items-center gap-6 group">
-                        <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                            <MapPin />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-gray-400 text-xs uppercase tracking-widest group-hover:text-primary transition-colors">Base Camp</h4>
-                            <p className="text-xl font-medium">El Chaltén, Patagonia Argentina</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-6 group">
-                        <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                            <Mail />
-                        </div>
-                        <div>
-                            <h4 className="font-bold text-gray-400 text-xs uppercase tracking-widest group-hover:text-primary transition-colors">Consultas</h4>
-                            <p className="text-xl font-medium">aventura@verticeextremo.com</p>
+                {/* Main Footer Links */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-24">
+                    <div className="col-span-2 lg:col-span-1 space-y-8">
+                        <Link to="/" className="flex items-center gap-3">
+                            <img src="/logo.jpg" alt="Logo" className="h-10 w-10 rounded-full border border-white/20" />
+                            <span className="text-xl font-black uppercase text-white tracking-tighter">VÉRTICE <span className="text-brand">FACTORY</span></span>
+                        </Link>
+                        <p className="text-slate-500 text-sm leading-relaxed max-w-xs">
+                            La primera factoría de expediciones de alto rendimiento fundamentada en el análisis de datos y seguridad satelital.
+                        </p>
+                        <div className="flex gap-4">
+                            {[Instagram, Twitter, Youtube].map((Icon, i) => (
+                                <a key={i} href="#" className="h-10 w-10 rounded-full glass-panel flex items-center justify-center text-slate-400 hover:text-brand hover:border-brand transition-all">
+                                    <Icon size={18} />
+                                </a>
+                            ))}
                         </div>
                     </div>
-                </motion.div>
-            </div>
 
-            <div className="absolute bottom-10 w-full text-center text-white/20 text-xs font-bold tracking-[0.3em] uppercase pointer-events-none">
-                © 2026 Vértice Extremo. All rights reserved.
+                    <div className="space-y-6">
+                        <h4 className="text-white font-bold text-xs uppercase tracking-[0.2em]">Producto</h4>
+                        <ul className="space-y-4 text-slate-500 text-sm">
+                            {['Expediciones', 'Dashboards', 'Seguridad 24/7', 'Analítica'].map(link => (
+                                <li key={link} className="hover:text-white transition-colors cursor-pointer">{link}</li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="space-y-6">
+                        <h4 className="text-white font-bold text-xs uppercase tracking-[0.2em]">Recursos</h4>
+                        <ul className="space-y-4 text-slate-500 text-sm">
+                            {['Guía de Alpinista', 'Mapas Offline', 'API Docs', 'Comunidad'].map(link => (
+                                <li key={link} className="hover:text-white transition-colors cursor-pointer">{link}</li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    <div className="space-y-6 lowercase">
+                        <h4 className="text-white font-bold text-xs uppercase tracking-[0.2em]">Contacto</h4>
+                        <div className="space-y-4 text-slate-500 text-sm">
+                            <p className="flex items-center gap-3 hover:text-white transition-colors cursor-pointer">
+                                <MapPin size={16} className="text-brand" /> El Chaltén, Patagonia
+                            </p>
+                            <p className="flex items-center gap-3 hover:text-white transition-colors cursor-pointer">
+                                <Mail size={16} className="text-brand" /> sky@verticeextremo.com
+                            </p>
+                            <p className="flex items-center gap-3 hover:text-white transition-colors cursor-pointer">
+                                <Phone size={16} className="text-brand" /> +54 2902 491-XXX
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bottom Bar */}
+                <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p className="text-slate-600 text-[10px] uppercase tracking-[0.3em]">
+                        © 2026 Vértice Extremo · Todos los derechos reservados
+                    </p>
+                    <div className="flex gap-8 text-[10px] uppercase tracking-widest text-slate-600">
+                        <span className="hover:text-slate-400 cursor-pointer transition-colors">Privacidad</span>
+                        <span className="hover:text-slate-400 cursor-pointer transition-colors">Términos</span>
+                        <span className="hover:text-slate-400 cursor-pointer transition-colors">SLA</span>
+                    </div>
+                </div>
             </div>
         </footer>
     );
@@ -592,11 +617,11 @@ const Footer = () => {
 
 const Home = () => {
     return (
-        <div className="bg-dark text-white selection:bg-primary selection:text-white">
-            <Navbar />
-
-            {/* Main Sections Container */}
-            <main className="w-full">
+        <div className="bg-slate-950 text-white selection:bg-brand/30 selection:text-brand-300 min-h-screen">
+            <Sidebar />
+            
+            {/* Main Sections Container - Content is now more immersive */}
+            <main className="w-full transition-all duration-500 pt-20 md:pt-0">
                 <Hero />
                 <About />
                 <Treks />

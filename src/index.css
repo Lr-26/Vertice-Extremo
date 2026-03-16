@@ -2,56 +2,68 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+@layer base {
+  :root {
+    --brand-primary: 25, 100%, 61%; /* #FF6B35 */
+    --brand-dark: 207, 95%, 8%;    /* #011627 */
+    --brand-surface: 208, 64%, 11%;
+  }
+
+  * {
+    @apply border-white/5;
+  }
+
+  body {
+    @apply bg-slate-950 text-slate-100 antialiased selection:bg-brand/30 selection:text-brand-300;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
-    scroll-behavior: smooth;
+  }
 }
 
-body {
-    @apply bg-dark text-white overflow-x-hidden;
-    /* Snap scrolling setup */
-    scroll-snap-type: y mandatory;
-    height: 100vh;
-    overflow-y: scroll;
+@layer components {
+  .saas-card {
+    @apply relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all duration-500 hover:border-brand/30 hover:bg-white/[0.07];
+  }
+
+  .glass-panel {
+    @apply bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)];
+  }
+
+  .glow-text {
+    @apply drop-shadow-[0_0_15px_rgba(255,107,53,0.5)];
+  }
+
+  .premium-button {
+    @apply relative inline-flex items-center justify-center px-8 py-4 font-bold text-white transition-all duration-300 rounded-full bg-brand hover:scale-105 hover:shadow-[0_0_40px_rgba(255,107,53,0.4)] active:scale-95;
+  }
 }
 
-/* Sections that should snap */
-section {
-    scroll-snap-align: start;
-    height: 100vh;
-    /* Force full height */
-    width: 100%;
-    position: relative;
-    /* For absolute positioning contexts */
+/* Background Mesh Effect */
+.bg-mesh {
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(25, 100%, 61%, 0.15) 0px, transparent 50%),
+    radial-gradient(at 50% 0%, hsla(210, 100%, 50%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, hsla(25, 100%, 61%, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
 }
 
-/* Scrollbar styling */
+/* Custom Scrollbar for Premium feel */
 ::-webkit-scrollbar {
-    width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #011627;
+  @apply bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #FF6B35;
-    border-radius: 4px;
+  @apply bg-white/10 rounded-full hover:bg-brand/50 transition-colors;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #ff8c61;
-}
-
-.glass-morphism {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
-.hide-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}

@@ -1,7 +1,12 @@
 
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { expeditions } from './data/expeditions.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,11 +17,7 @@ app.use(express.json());
 import authRoutes from './routes/auth.js';
 app.use('/api/auth', authRoutes);
 
-// Routes
-app.get('/', (req, res) => {
-    res.send('Vértice Extremo API is running');
-});
-
+// API Routes
 app.get('/api/expeditions', (req, res) => {
     res.json(expeditions);
 });
@@ -29,6 +30,15 @@ app.get('/api/expeditions/:id', (req, res) => {
     res.json(expedition);
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+// Servir archivos estáticos del frontend (carpeta dist)
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// Ruta catch-all para manejar React Router
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../dist', 'index.html'));
 });
+
+app.listen(PORT, () => {
+    console.log(`Server unificado corriendo en puerto ${PORT}`);
+});
+
