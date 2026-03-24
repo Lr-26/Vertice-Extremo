@@ -8,6 +8,8 @@ export const expeditions = [
         level: "PRO",
         duration: "14 Días",
         location: "Himalayas, Nepal",
+        lat: 27.9881,
+        lng: 86.9250,
         heroImage: "/everest_base_camp_trek_1769465309368.png",
         gallery: [
             "/everest_base_camp_trek_1769465309368.png",
@@ -37,6 +39,8 @@ export const expeditions = [
         level: "MED",
         duration: "5 Días",
         location: "El Chaltén, Argentina",
+        lat: -49.2728,
+        lng: -73.0428,
         heroImage: "/fitz_roy_patagonia_trek_1769465333392.png",
         gallery: [
             "/fitz_roy_patagonia_trek_1769465333392.png",
@@ -65,6 +69,8 @@ export const expeditions = [
         level: "PRO",
         duration: "10 Días",
         location: "Francia / Italia / Suiza",
+        lat: 45.8326,
+        lng: 6.8651,
         heroImage: "/mont_blanc_trek_europe_1769465358088.png",
         gallery: [
             "/mont_blanc_trek_europe_1769465358088.png",

@@ -4,6 +4,25 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { ChevronDown, MapPin, Mail, Phone, Instagram, Twitter, Youtube, ArrowLeft, ArrowRight, Menu, X, Maximize2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { expeditions } from '../data/expeditions';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icons in Leaflet + Vite
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// Custom Icon for Vértice Factory
+const factoryIcon = new L.DivIcon({
+    className: 'custom-div-icon',
+    html: `<div style="background-color: #FF6B35; width: 12px; height: 12px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px #FF6B35;"></div>`,
+    iconSize: [12, 12],
+    iconAnchor: [6, 6]
+});
 
 // --- Shared Components ---
 
@@ -522,12 +541,44 @@ const Gallery = () => {
 // --- Footer Section ---
 const Footer = () => {
     return (
-        <footer id="contacto" className="w-full bg-slate-950 pt-32 pb-12 relative overflow-hidden border-t border-white/5">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-brand/5 blur-[120px] rounded-full pointer-events-none"></div>
+        <footer id="contacto" className="w-full pt-32 pb-12 relative overflow-hidden border-t border-white/5 bg-slate-950">
+            {/* Increased Map visibility and ensured interaction */}
+            <div className="absolute inset-0 z-0 opacity-100">
+                <MapContainer 
+                    center={[20, 0]} 
+                    zoom={2} 
+                    scrollWheelZoom={true} 
+                    className="h-full w-full"
+                    style={{ background: '#020617' }}
+                >
+                    <TileLayer
+                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+                    />
+                    {expeditions.map(exp => (
+                        <Marker 
+                            key={exp.id} 
+                            position={[exp.lat, exp.lng]} 
+                            icon={factoryIcon}
+                        >
+                            <Popup className="factory-popup">
+                                <div className="text-slate-900 p-1">
+                                    <h4 className="font-bold text-xs uppercase mb-1">{exp.title}</h4>
+                                    <p className="text-[10px] text-slate-500">{exp.location}</p>
+                                </div>
+                            </Popup>
+                        </Marker>
+                    ))}
+                </MapContainer>
+            </div>
 
-            <div className="container mx-auto px-6 relative z-10">
+            {/* Top and Bottom edge gradients for blending - NO overlay over the center */}
+            <div className="absolute top-0 left-0 w-full h-40 z-[1] bg-gradient-to-b from-slate-950 to-transparent pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-full h-40 z-[1] bg-gradient-to-t from-slate-950 to-transparent pointer-events-none"></div>
+
+            <div className="container mx-auto px-6 relative z-[50] pointer-events-none">
                 {/* Upper CTA Section */}
-                <div className="glass-panel p-10 md:p-16 rounded-[40px] mb-24 flex flex-col lg:flex-row items-center justify-between gap-10 border border-white/10">
+                <div className="glass-panel p-10 md:p-16 rounded-[40px] mb-24 flex flex-col lg:flex-row items-center justify-between gap-10 border border-white/10 pointer-events-auto">
                     <div className="max-w-2xl text-center lg:text-left">
                         <h2 className="text-4xl md:text-6xl font-black uppercase text-white mb-6 leading-none">
                             ¿Listo para <span className="text-brand">despegar?</span>
@@ -547,7 +598,7 @@ const Footer = () => {
                 </div>
 
                 {/* Main Footer Links */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-24">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-12 mb-24 pointer-events-auto">
                     <div className="col-span-2 lg:col-span-1 space-y-8">
                         <Link to="/" className="flex items-center gap-3">
                             <img src="/logo.jpg" alt="Logo" className="h-10 w-10 rounded-full border border-white/20" />
@@ -600,7 +651,7 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 pointer-events-auto">
                     <p className="text-slate-600 text-[10px] uppercase tracking-[0.3em]">
                         © 2026 Vértice Extremo · Todos los derechos reservados
                     </p>
