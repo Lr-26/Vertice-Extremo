@@ -6,7 +6,7 @@ coverage
 
 Yonovineajugal/
 
-# Imágenes pesadas (subir por separado)
-public/*.png
-public/*.jpg
+# Imágenes pesadas (subidas directamente)
+# public/*.png
+# public/*.jpg
 .vercel
